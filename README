@@ -1,0 +1,29 @@
+Debian-CBS installation CD-ROM
+
+http://github.com/vladimir-ipatov/cbs
+
+This is the Debian/GNU Linux custom CD-ROM, which helps to install
+the complete multipurpose server in less than a 1 hour.
+
+* Optimized and quet installer with predefined partitioning schemes
+* Tune (automatically) system parameters for productivity
+* Set up network services if you need.
+
+Debian-CBS includes pre-tuned services:
+
+* firewall: iptables-persistent
+* transparent proxy: squid+squidguard
+* traffic statistics: bandwidthd+lightsquid
+* web server with site separation: nginx+php-fpm+mysql
+* videoserver: zoneminder+apache+mysql
+* dns server with ddns support: bind9
+* dhcp server with ddns support: isc-dhcp-server
+* file server: samba
+* domain controller: samba4, slapd
+* backup server: bacula
+* terminal server: xrdp+x11rdp+lxde
+
+To build the project you'll need Debian/GNU environment with these packages:
+sharutils simple-cdd debhelper dpkg-dev
+
+Read OVERVIEW next.

@@ -1,0 +1,133 @@
+# kernel
+firmware-qlogic
+firmware-bnx2
+firmware-bnx2x
+firmware-realtek
+
+# mandatory stuff
+iproute
+
+bind9
+dnsutils
+
+isc-dhcp-server
+
+iptables-persistent
+
+approx
+
+# useful stuff
+file
+wget
+htop
+links
+nmap
+zsh
+genisoimage
+
+# various stuff
+console-cyrillic
+bash-completion
+
+# exim
+exim4
+exim4-base
+exim4-config
+exim4-daemon-heavy
+exim4-daemon-light
+
+# usbip
+libusbip-dev
+libusbip0
+usbip-source
+usbip
+
+# windows
+dosfstools
+
+# zabbix
+zabbix-agent
+zabbix-server-mysql
+zabbix-server-pgsql
+zabbix-frontend-php
+
+# proxy and webservers
+squid
+nginx
+
+# apache2
+apache2
+apache2-mpm-prefork
+apache2-utils
+apache2-bin
+apache2-common
+
+# php5
+libapache2-mod-php5
+php5
+php5-cli
+php5-common
+php5-curl
+php5-gd
+php5-imap
+php5-ldap
+php5-mcrypt
+php5-mysql
+php5-pgsql
+php5-pspell
+php5-suhosin
+
+# mysql
+libdbd-mysql-perl
+libmysqlclient16
+mysql-client-5.1
+mysql-common
+mysql-server-5.1
+mysql-server-core-5.1
+
+# bacula
+bacula-common
+bacula-common-sqlite3
+bacula-console
+bacula-director-common
+bacula-director-sqlite3
+bacula-fd
+bacula-sd
+bacula-sd-sqlite3
+bacula-server
+
+# samba
+samba
+samba-common
+samba-common-bin
+smbldap-tools
+
+# ldap
+ldap-utils
+ldapvi
+libldap-2.4-2
+libnss-ldap
+libpam-ldap
+slapd
+
+# postgresql
+postgresql
+postgresql-8.4
+postgresql-client-8.4
+postgresql-client-common
+postgresql-common
+postgresql-contrib
+postgresql-contrib-8.4
+
+# dovecot
+dovecot-common
+dovecot-imapd
+dovecot-pop3d
+
+# partition utils
+parted
+
+# videoserver
+zoneminder
+
+# terminal

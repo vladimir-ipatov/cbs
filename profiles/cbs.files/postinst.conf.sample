@@ -1,0 +1,9 @@
+# This is the sample postinst tuning file
+# copy it into postinst.conf and edit
+
+#vlan_no=123
+#vnc_cluster_password=changeme
+
+# Tune disks
+
+#read_ahead=512

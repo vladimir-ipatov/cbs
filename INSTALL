@@ -1,0 +1,43 @@
+This is the installation instructions for Debian-CBS project.
+
+The fresh version of this document may be found at
+http://github.com/vladimir-ipatov/cbs
+
+1. You'll need the Internet connection to build CD-ROM
+
+The build engine is based on the simple-cdd Debian package.
+
+2. Install build components
+
+apt-get install simple-cdd sharutils git
+
+3. Get project sources
+
+git clone http://github.com/vladimir-ipatov/cbs
+
+4. Adjust the environment
+
+4.1. Adjust profiles/cbs.conf
+
+You may need to change debian_mirror and security_mirror settings if
+you are using another mirrors
+
+4.2. Adjust profiles/cbs.downloads
+
+You can add your own packages here to make more functional distro on
+the CD.  It is recomended that you should first try the default list
+an then rebuild with your extention.
+
+5. Build ISO image
+
+cd cbs
+./build-sh 
+
+6. Burn ISO image
+
+Image will be built in images/ folder, burn it with your favorite tool
+(for ex. - k3b).
+
+7. The system is ready to setup
+
+Read SETUP next.

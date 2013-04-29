@@ -1,0 +1,97 @@
+# Default preseed file for the Debian-CBS project
+# https://github.com/vladimir-ipatov/cbs
+
+# This variant implements the automatic partitioning
+# It should be used with cbs.files/postinst.conf partitioning features
+
+# The automatic disk layout is following:
+# /dev/sd[ab]1 =   10G    = RAID1 = /dev/md0 = root
+# /dev/sd[ab]2 =    2G    = RAID1 = /dev/md1 = swap
+# /dev/sd[ab]3 = the rest = RAID? = not configured
+
+# Using the partitioning options in the postinst.conf you can
+# * add another disks to include to RAID1 for root and swap as the active members
+# * place LVM/xenvg on the RAID10 on /dev/sd[ab*]3 or on the completely another set of disks
+
+
+simple-cdd	simple-cdd/profiles multiselect cbs
+tasksel		tasksel/first multiselect 
+
+#### ADD chose-partman-recipe ####
+
+# Also used kernel string in *.conf to auto-accept all of theese
+d-i	debian-installer/country	string	US
+d-i	localechooser/shortlist	select	US
+d-i	debian-installer/locale	select	en_US.UTF-8
+
+# set kernel version
+d-i base-installer/kernel/image string linux-image-2.6.32-5-amd64
+
+d-i		clock-setup/utc boolean true
+clock-setup	clock-setup/ntp	boolean	false
+
+d-i	console-keymaps-at/keymap select us
+d-i	console-tools/archs	select	at
+
+# Country settings. 
+# XXX probably skip and latter puppet work will be more useful
+d-i	localechooser/supported-locales multiselect en_US.UTF-8, ru_RU.UTF-8
+d-i     time/zone       select  Europe/Moscow
+tzsetup-udeb	tzsetup/country/RU	select	Europe/Moscow
+
+# Keyboard
+# Keyboard and console fonts will be setup via /etc/default/* files
+#d-i     keyboard-configuration/toggle select	Alt+Shift
+#d-i	console-setup/fontface47 select		Terminus
+#d-i	console-setup/fontsize-text47 select	16
+#d-i	console-setup/charmap47	select		UTF-8
+#d-i	console-setup/codesetcode string	CyrSlav
+
+passwd   passwd/make-user    boolean true
+d-i passwd/user-default-groups string audio cdrom video sudo
+
+d-i netcfg/choose_interface select auto
+#d-i netcfg/disable_dhcp boolean true
+d-i netcfg/wireless_wep string 
+
+
+####partman
+#### INCLUDE PARTMAN ####
+
+####end of partitioning
+
+
+#base-config	apt-setup/uri_type  select cdrom
+#base-config	apt-setup/cd/another  boolean false
+#base-config	apt-setup/another boolean false
+#apt-mirror-setup	apt-setup/use_mirror    boolean false
+#d-i	apt-setup/use_mirror    boolean false
+#apt-mirror-setup	apt-setup/no_mirror	boolean	true
+#base-config apt-setup/security-updates  boolean false
+#d-i apt-setup/non-free  boolean true
+#d-i apt-setup/contrib boolean true
+d-i apt-setup/non-free boolean true
+d-i apt-setup/contrib boolean true
+d-i apt-setup/use_mirror boolean false
+d-i apt-setup/services-select multiselect
+d-i apt-setup/security_host string
+d-i apt-setup/volatile_host string
+
+
+exim4-config  exim4/dc_eximconfig_configtype  select no configuration at this time
+# XXX use root, but check for mailing permissions
+exim4-config  exim4/dc_postmaster   string root
+
+#d-i finish-install/reboot_in_progress note
+base-config base-config/intro note 
+base-config base-config/login note 
+d-i     popularity-contest/participate  boolean false
+
+### simple-cdd commands
+
+# you may add to the following commands by including a ";" followed by your
+# shell commands.
+
+# loads the simple-cdd-profiles udeb to which asks for which profiles to use,
+# load the debconf preseeding and queue packages for installation.
+d-i preseed/early_command string anna-install simple-cdd-profiles
