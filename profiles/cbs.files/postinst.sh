@@ -188,6 +188,13 @@ else
 	echo "#/home/cbs.iso /media/cbs iso9660 loop 0 1" >>$target/etc/fstab
 fi
 
+## set cbs apt sources
+cp files/apt/sci-dev.list files/apt/apt.pub /target/etc/apt/sources.list.d
+cp files/apt/apt.pub /target/etc/apt
+echo "deb http://mirror.yandex.ru/debian/ wheezy main contrib non-free \
+deb http://mirror.yandex.ru/debian-security/ wheezy/updates main contrib non-free" >> /target/etc/apt/sources.list
+chroot /target "apt-key add /etc/apt/apt.pub"
+
 ## Add cbs deploing scripts
 
 cp files/sbin/* $target/usr/local/sbin/

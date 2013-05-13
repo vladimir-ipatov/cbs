@@ -31,3 +31,5 @@ usbmount
 console-setup
 chrony
 sudo
+openssh-server
+openssh-client

@@ -25,12 +25,18 @@ d-i	localechooser/shortlist	select	US
 d-i	debian-installer/locale	select	en_US.UTF-8
 
 # set kernel version
-d-i base-installer/kernel/image string linux-image-2.6.32-5-amd64
+d-i base-installer/kernel/image string linux-image-3.2.0-4-amd64
 
 d-i		clock-setup/utc boolean true
 clock-setup	clock-setup/ntp	boolean	false
 
 d-i	console-keymaps-at/keymap select us
+#d-i keyboard-configuration/variant select English (US)
+#keyboard-configuration keyboard-configuration/variant select English (US)
+#d-i keyboard-configuration/xkb-keymap select us
+#keyboard-configuration keyboard-configuration/xkb-keymap select us
+#d-i keymap select us
+
 d-i	console-tools/archs	select	at
 
 # Country settings. 
