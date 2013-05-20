@@ -374,13 +374,13 @@ echo "To commit changes run invoke-rc.d iptables-persistent start"
 
 ;;
 
-dns)
-puppet apply /root/dns.pp
+bind9)
+puppet apply --modulepath=/root/puppet/modules /root/bind9.pp
 
 ;;
 
-dhcp)
-puppet apply /root/dhcp.pp
+dhcpd)
+puppet apply --modulepath=/root/puppet/modules /root/dhcpd.pp
 
 ;;
 

@@ -92,16 +92,16 @@ fi
 
 # Prepare puppet modules as git repository with github upstream
 
-#puppet_dir=profiles/$profile.files/files/root/puppet
-#if [ -d $puppet_dir/.git ]; then
-#  echo Pull sci-puppet
+puppet_dir=profiles/$profile.files/files/root/puppet
+if [ -d $puppet_dir/.git ]; then
+  echo Pull sci-puppet
   # We will prefetch the desired branch in the case it was not exists upon previous clone
-#  (cd $puppet_dir; git fetch origin $branch; git checkout $branch; git pull)
-#else
-#  echo Clone sci-puppet
-#  git clone https://github.com/skycover/sci-puppet.git $puppet_dir
-#  (cd $puppet_dir; git checkout $branch)
-#fi
+  (cd $puppet_dir; git fetch origin $branch; git checkout $branch; git pull)
+else
+  echo Clone sci-puppet
+  git clone https://github.com/skycover/sci-puppet.git $puppet_dir
+  (cd $puppet_dir; git checkout $branch)
+fi
 
 # Write the current commit number to a file git-commit.txt
 git log|head -1 >profiles/$profile.files/git-commit.txt
