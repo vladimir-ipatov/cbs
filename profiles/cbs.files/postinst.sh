@@ -72,6 +72,12 @@ sed -i '/\/media\/usb0/d' $target/etc/fstab
 
 cp files/default/* $target/etc/default/
 
+## Copy sci-puppet modules
+
+cp -r files/root/puppet/modules $target/etc/puppet/
+cp -r files/root/puppet/manifests $target/etc/puppet/
+cp -r files/root/*pp $target/etc/puppet/
+
 ## Add startup script rc.cbs to setup performance
 
 # a bit ugly, but fast ;)

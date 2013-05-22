@@ -1,4 +1,4 @@
-import "/root/puppet/modules/bind9/manifests/init.pp"
+import "/etc/puppet/modules/bind9/manifests/init.pp"
 
 stage {pre0: before => Stage[main]}
 stage {pre1: before => Stage[main], require => Stage[pre0]}

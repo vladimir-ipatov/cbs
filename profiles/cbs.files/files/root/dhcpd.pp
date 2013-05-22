@@ -1,4 +1,4 @@
-import "/root/puppet/modules/dhcpd/manifests/init.pp"
+import "/etc/puppet/modules/dhcpd/manifests/init.pp"
 
 stage {pre0: before => Stage[main]}
 stage {pre1: before => Stage[main], require => Stage[pre0]}
