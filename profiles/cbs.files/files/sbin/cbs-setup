@@ -1,9 +1,9 @@
 #!/bin/sh
 case "$1" in
 
-firewall)
-puppet apply /root/firewall.pp
-echo "please check /etc/iptables/rules and modify it to fit your demands"
+iptables)
+puppet apply /root/iptables.pp
+echo "please check /etc/iptables/rules.v4 and modify it to fit your demands"
 echo "To commit changes run invoke-rc.d iptables-persistent start"
 
 ;;
