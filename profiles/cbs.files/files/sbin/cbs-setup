@@ -29,6 +29,50 @@ echo "generic traffic statistics available on http://$(hostname -f)/bandwidthd/"
 echo "proxy traffic statistics available on http://$(hostname -f)/lightsquid/"
 
 ;;
+web)
+puppet apply /etc/puppet/web.pp
+
+;;
+
+video)
+puppet apply /etc/puppet/video.pp
+
+;;
+
+file)
+puppet apply /etc/puppet/file.pp
+
+;;
+
+pdc)
+puppet apply /etc/puppet/pdc.pp
+
+;;
+
+mail)
+puppet apply /etc/puppet/mail.pp
+
+;;
+
+bacula)
+puppet apply /etc/puppet/bacula.pp
+
+;;
+
+zabbix-server)
+puppet apply /etc/puppet/zabbix-server.pp
+
+;;
+
+terminal)
+puppet apply /etc/puppet/terminal.pp
+
+;;
+
+puppet)
+
+;;
+
 
 vg)
 cat <<EOF
@@ -45,7 +89,7 @@ EOF
 ;;
 *)
 
-echo "Usage: $0 {iptables|squid|traffic|bind9|dhcpd|web|videoserver|file|pdc|mail|backup|terminal|puppet}"
+echo "Usage: $0 {iptables|squid|traffic|bind9|dhcpd|web|video|file|pdc|mail|bacula|zabbix-server|terminal|puppet}"
 
 ;;
 
