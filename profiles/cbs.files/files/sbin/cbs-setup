@@ -18,8 +18,15 @@ puppet apply /etc/puppet/dhcpd.pp
 
 ;;
 
+squid)
+puppet apply /etc/puppet/squid.pp
+
+;;
+
 traffic)
-puppet apply /root/traffic.pp
+puppet apply /etc/puppet/traffic.pp
+echo "generic traffic statistics available on http://$(hostname -f)/bandwidthd/"
+echo "proxy traffic statistics available on http://$(hostname -f)/lightsquid/"
 
 ;;
 
@@ -38,7 +45,7 @@ EOF
 ;;
 *)
 
-echo "Usage: $0 {puppet|firewall|proxy|traffic|web|videoserver|bind9|dhcpd|file|pdc|mail|backup|terminal}"
+echo "Usage: $0 {iptables|squid|traffic|bind9|dhcpd|web|videoserver|file|pdc|mail|backup|terminal|puppet}"
 
 ;;
 
