@@ -1,4 +1,4 @@
-# kernel
+#add kernel
 firmware-qlogic
 firmware-bnx2
 firmware-bnx2x
@@ -74,6 +74,7 @@ php5-common
 php5-curl
 php5-gd
 php5-imap
+php5-intl
 php5-ldap
 php5-mcrypt
 php5-mysql
