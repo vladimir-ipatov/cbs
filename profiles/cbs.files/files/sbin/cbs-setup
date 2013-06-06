@@ -49,11 +49,6 @@ puppet apply /etc/puppet/pdc.pp
 
 ;;
 
-mail)
-puppet apply /etc/puppet/mail.pp
-
-;;
-
 bacula)
 puppet apply /etc/puppet/bacula.pp
 

@@ -20,7 +20,6 @@ Debian-CBS includes pre-tuned services:
 * dhcp server with ddns support: isc-dhcp-server
 * file server: samba
 * domain controller: samba4
-* mail server: exim4+dovecot
 * bacula server: bacula-director-mysql+bacula-sd-mysql
 * bacula agent: bacula-fd
 * zabbix server: zabbix-mysql zabbix-frontend-php
