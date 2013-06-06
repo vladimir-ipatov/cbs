@@ -59,6 +59,11 @@ puppet apply /etc/puppet/bacula.pp
 
 ;;
 
+bacula-fd)
+puppet apply /etc/puppet/bacula-fd.pp
+
+;;
+
 zabbix-server)
 puppet apply /etc/puppet/zabbix-server.pp
 
@@ -100,7 +105,7 @@ EOF
 ;;
 *)
 
-echo "Usage: $0 {iptables|squid|traffic|bind9|dhcpd|web|video|file|pdc|mail|bacula|zabbix-server|zabbix-agent servername|terminal|puppet}"
+echo "Usage: $0 {iptables|squid|traffic|bind9|dhcpd|web|video|file|pdc|mail|bacula|bacula-fd|zabbix-server|zabbix-agent servername|terminal|puppet}"
 
 ;;
 

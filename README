@@ -21,8 +21,10 @@ Debian-CBS includes pre-tuned services:
 * file server: samba
 * domain controller: samba4
 * mail server: exim4+dovecot
-* backup server: bacula
+* bacula server: bacula-director-mysql+bacula-sd-mysql
+* bacula agent: bacula-fd
 * zabbix server: zabbix-mysql zabbix-frontend-php
+* zabbix agent
 * puppet server: puppetmaster
 * terminal server: xrdp+x11rdp+lxde
 
