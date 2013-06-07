@@ -81,6 +81,11 @@ puppet apply /etc/puppet/terminal.pp
 ;;
 
 puppet)
+apt-get install puppetmaster
+echo '*.'`dnsdomainname` >"$TARGET/etc/puppet/autosign.conf"
+echo 'certname = puppet' >>"$TARGET/etc/puppet/puppet.conf"
+sed -i 's/START=no/START=yes/' /etc/default/puppetmaster
+invoke-rc.d puppetmaster restart
 
 ;;
 
