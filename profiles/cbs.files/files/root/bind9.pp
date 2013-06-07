@@ -7,6 +7,6 @@ stage {post0: require => Stage[main]}
 stage {post1: require => Stage[post0]}
 stage {post2: require => Stage[post1]}
 
-class { bind9: stage => main, }
+class { bind9_sci: stage => main, }
 
 
