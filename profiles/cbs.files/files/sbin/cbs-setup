@@ -2,7 +2,7 @@
 case "$1" in
 
 iptables)
-puppet apply /root/iptables.pp
+puppet apply /etc/puppet/iptables.pp
 echo "please check /etc/iptables/rules.v4 and modify it to fit your demands"
 echo "To commit changes run invoke-rc.d iptables-persistent start"
 
