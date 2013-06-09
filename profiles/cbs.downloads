@@ -1,4 +1,4 @@
-# kernel
+#add kernel
 firmware-qlogic
 firmware-bnx2
 firmware-bnx2x
@@ -38,8 +38,6 @@ exim4-daemon-light
 
 # usbip
 libusbip-dev
-libusbip0
-usbip-source
 usbip
 
 # windows
@@ -52,15 +50,21 @@ zabbix-server-pgsql
 zabbix-frontend-php
 
 # proxy and webservers
-squid
+squid3
+squidguard
 nginx
+
+# traffic statistics
+lightsquid
+bandwidthd
 
 # apache2
 apache2
 apache2-mpm-prefork
+apache2-mpm-worker
 apache2-utils
-apache2-bin
-apache2-common
+apache2.2-bin
+apache2.2-common
 
 # php5
 libapache2-mod-php5
@@ -70,20 +74,21 @@ php5-common
 php5-curl
 php5-gd
 php5-imap
+php5-intl
 php5-ldap
 php5-mcrypt
 php5-mysql
 php5-pgsql
 php5-pspell
-php5-suhosin
+php5-fpm
 
 # mysql
 libdbd-mysql-perl
 libmysqlclient16
-mysql-client-5.1
+mysql-client-5.5
 mysql-common
-mysql-server-5.1
-mysql-server-core-5.1
+mysql-server-5.5
+mysql-server-core-5.5
 
 # bacula
 bacula-common
@@ -112,12 +117,12 @@ slapd
 
 # postgresql
 postgresql
-postgresql-8.4
-postgresql-client-8.4
+postgresql-9.1
+postgresql-client-9.1
 postgresql-client-common
 postgresql-common
 postgresql-contrib
-postgresql-contrib-8.4
+postgresql-contrib-9.1
 
 # dovecot
 dovecot-common

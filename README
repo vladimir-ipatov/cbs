@@ -15,13 +15,18 @@ Debian-CBS includes pre-tuned services:
 * transparent proxy: squid+squidguard
 * traffic statistics: bandwidthd+lightsquid
 * web server with site separation: nginx+php-fpm+mysql
-* videoserver: zoneminder+apache+mysql
+* videoserver: zoneminder
 * dns server with ddns support: bind9
 * dhcp server with ddns support: isc-dhcp-server
 * file server: samba
-* domain controller: samba4, slapd
-* backup server: bacula
+* domain controller: samba4
+* bacula server: bacula-director-mysql+bacula-sd-mysql
+* bacula agent: bacula-fd
+* zabbix server: zabbix-mysql zabbix-frontend-php
+* zabbix agent
+* puppet server: puppetmaster
 * terminal server: xrdp+x11rdp+lxde
+
 
 To build the project you'll need Debian/GNU environment with these packages:
 sharutils simple-cdd debhelper dpkg-dev

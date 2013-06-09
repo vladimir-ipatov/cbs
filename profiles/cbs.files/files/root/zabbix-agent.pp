@@ -1,4 +1,4 @@
-import "/etc/puppet/modules/bind9/manifests/init.pp"
+import "/etc/puppet/modules/zabbix-agent/manifests/init.pp"
 
 stage {pre0: before => Stage[main]}
 stage {pre1: before => Stage[main], require => Stage[pre0]}
@@ -7,6 +7,5 @@ stage {post0: require => Stage[main]}
 stage {post1: require => Stage[post0]}
 stage {post2: require => Stage[post1]}
 
-class { bind9_sci: stage => main, }
-
+class { zabbix-agent: stage => main, zabbix_server => "changeme", }
 

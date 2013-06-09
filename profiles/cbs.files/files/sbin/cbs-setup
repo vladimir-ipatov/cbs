@@ -1,9 +1,9 @@
 #!/bin/sh
 case "$1" in
 
-firewall)
-puppet apply /root/firewall.pp
-echo "please check /etc/iptables/rules and modify it to fit your demands"
+iptables)
+puppet apply /etc/puppet/iptables.pp
+echo "please check /etc/iptables/rules.v4 and modify it to fit your demands"
 echo "To commit changes run invoke-rc.d iptables-persistent start"
 
 ;;
@@ -18,10 +18,77 @@ puppet apply /etc/puppet/dhcpd.pp
 
 ;;
 
-traffic)
-puppet apply /root/traffic.pp
+squid)
+puppet apply /etc/puppet/squid.pp
 
 ;;
+
+traffic)
+puppet apply /etc/puppet/traffic.pp
+echo "generic traffic statistics available on http://$(hostname -f)/bandwidthd/"
+echo "proxy traffic statistics available on http://$(hostname -f)/lightsquid/"
+
+;;
+web)
+puppet apply /etc/puppet/web.pp
+
+;;
+
+video)
+puppet apply /etc/puppet/video.pp
+
+;;
+
+file)
+puppet apply /etc/puppet/file.pp
+
+;;
+
+pdc)
+puppet apply /etc/puppet/pdc.pp
+
+;;
+
+bacula)
+puppet apply /etc/puppet/bacula.pp
+
+;;
+
+bacula-fd)
+puppet apply /etc/puppet/bacula-fd.pp
+
+;;
+
+zabbix-server)
+puppet apply /etc/puppet/zabbix-server.pp
+
+;;
+
+zabbix-agent)
+if [ -z $2 ]; then
+        echo "please tell server name"
+	echo "$0 zabbix-agent servername"
+else
+        sed -i "s/changeme/$2/" /etc/puppet/zabbix-agent.pp
+        puppet apply /etc/puppet/zabbix-agent.pp
+fi
+
+;;
+
+terminal)
+puppet apply /etc/puppet/terminal.pp
+
+;;
+
+puppet)
+apt-get install puppetmaster
+echo '*.'`dnsdomainname` >"$TARGET/etc/puppet/autosign.conf"
+echo 'certname = puppet' >>"$TARGET/etc/puppet/puppet.conf"
+sed -i 's/START=no/START=yes/' /etc/default/puppetmaster
+invoke-rc.d puppetmaster restart
+
+;;
+
 
 vg)
 cat <<EOF
@@ -38,7 +105,7 @@ EOF
 ;;
 *)
 
-echo "Usage: $0 {puppet|firewall|proxy|traffic|web|videoserver|bind9|dhcpd|file|pdc|mail|backup|terminal}"
+echo "Usage: $0 {iptables|squid|traffic|bind9|dhcpd|web|video|file|pdc|mail|bacula|bacula-fd|zabbix-server|zabbix-agent servername|terminal|puppet}"
 
 ;;
 
