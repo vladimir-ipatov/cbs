@@ -73,7 +73,7 @@ EOF
 d-i partman-auto/method string regular
 d-i partman-auto/disk string /dev/sda
 d-i partman-auto/expert_recipe string root ::	\\
-	2048 10 2048 ext4			\\
+	10240 10 10240 ext4			\\
 		\$lvmignore{ }					\\
 		\$primary{ } \$bootable{ } method{ format }	\\
 		format{ } use_filesystem{ } filesystem{ ext4 }	\\
@@ -156,7 +156,7 @@ EOF
 
 # Next you need to specify the physical partitions that will be used. 
 d-i partman-auto/expert_recipe string multiraid ::	\\
-	2048 10 2048 raid			\\
+	10240 10 10240 raid			\\
 		\$primary{ } method{ raid }	\\
 	.					\\
 	1024 20 1024 raid			\\
