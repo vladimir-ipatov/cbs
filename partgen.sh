@@ -178,7 +178,7 @@ EOF
   if [ -n "$partlvm" ]; then
     cat <<EOF
 	.					\\
-	2048 20 2048 ext4			\\
+	10240 20 10240 ext4			\\
 		\$defaultignore{ }		\\
 		\$lvmok{ }			\\
 		lv_name{ home }		\\
