@@ -79,7 +79,7 @@ d-i partman-auto/expert_recipe string root ::	\\
 		format{ } use_filesystem{ } filesystem{ ext4 }	\\
 		mountpoint{ / }					\\
 	.							\\
-	512 20 512 linux-swap					\\
+	1024 20 1024 linux-swap					\\
 		\$lvmignore{ }					\\
 		\$primary{ } method{ swap } format{ }		\\
 EOF
