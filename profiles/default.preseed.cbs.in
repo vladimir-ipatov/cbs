@@ -53,8 +53,8 @@ tzsetup-udeb	tzsetup/country/RU	select	Europe/Moscow
 #d-i	console-setup/charmap47	select		UTF-8
 #d-i	console-setup/codesetcode string	CyrSlav
 
-passwd   passwd/make-user    boolean true
-d-i passwd/user-default-groups string audio cdrom video sudo
+passwd   passwd/make-user    boolean false
+#d-i passwd/user-default-groups string audio cdrom video sudo
 
 d-i netcfg/choose_interface select auto
 #d-i netcfg/disable_dhcp boolean true
