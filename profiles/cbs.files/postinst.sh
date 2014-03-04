@@ -72,6 +72,10 @@ sed -i '/\/media\/usb0/d' $target/etc/fstab
 
 cp files/default/* $target/etc/default/
 
+## Copy chrony config
+
+cp files/chrony.conf $target/etc/chrony
+
 ## Copy sci-puppet modules
 
 cp -r files/root/puppet/modules $target/etc/puppet/
