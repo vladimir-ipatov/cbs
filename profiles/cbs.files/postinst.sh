@@ -190,11 +190,11 @@ else
 fi
 
 ## set cbs apt sources
-cp files/apt/sci-dev.list files/apt/apt.pub $target/etc/apt/sources.list.d
+cp files/apt/sci-dev.list $target/etc/apt/sources.list.d
 cp files/apt/apt.pub $target/etc/apt
 echo "deb http://mirror.yandex.ru/debian/ wheezy main" >> $target/etc/apt/sources.list
 echo "deb http://mirror.yandex.ru/debian-security/ wheezy/updates main" >> $target/etc/apt/sources.list
-echo "deb http://ftp.debian.org/debian-backports/ wheezy-backports main" >> $target/etc/apt/sources.list
+echo "deb http://mirror.yandex.ru/debian/ wheezy-backports main" >> $target/etc/apt/sources.list
 chroot $target "apt-key add /etc/apt/apt.pub"
 
 ## Add cbs deploing scripts
