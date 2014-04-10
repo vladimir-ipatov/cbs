@@ -82,6 +82,10 @@ cp -r files/root/puppet/modules $target/etc/puppet/
 cp -r files/root/puppet/manifests $target/etc/puppet/
 cp -r files/root/*pp $target/etc/puppet/
 
+## Allow plugins and facts syncing for puppet
+echo Editing puppet.conf
+sed -i '/\[main\]/ a\pluginsync = true' $target/etc/puppet/puppet.conf
+
 ## Add startup script rc.cbs to setup performance
 
 # a bit ugly, but fast ;)
