@@ -199,7 +199,7 @@ cp files/apt/apt.pub $target/etc/apt
 echo "deb http://mirror.yandex.ru/debian/ wheezy main" >> $target/etc/apt/sources.list
 echo "deb http://mirror.yandex.ru/debian-security/ wheezy/updates main" >> $target/etc/apt/sources.list
 echo "deb http://mirror.yandex.ru/debian/ wheezy-backports main" >> $target/etc/apt/sources.list
-chroot $target "apt-key add /etc/apt/apt.pub"
+apt-key add /etc/apt/apt.pub
 
 ## Add cbs deploing scripts
 
