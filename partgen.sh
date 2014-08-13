@@ -116,7 +116,7 @@ EOF
   if [ -n "$partlvm" ]; then
     cat <<EOF
 # was unable to do in-target mount /stuff, so it woll done in postinst.sh
-d-i preseed/late_command string vgcreate cbs /dev/$lvmvol && lvcreate -L 2G -n home cbs && mkfs.ext4 /dev/cbs/home && echo "/dev/cbs/home /home ext4 defaults 0 2" >>/target/etc/fstab && mount /dev/cbs/home /target/mnt && mv /target/home/* /target/mnt && umount /target/mnt
+d-i preseed/late_command string vgcreate cbs /dev/$lvmvol && lvcreate -L 2G -n home cbs && mkfs.ext4 /dev/cbs/home && echo "/dev/cbs/home /home ext4 defaults 0 2" >>/target/etc/fstab
 EOF
   fi
   ;;
