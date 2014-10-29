@@ -205,13 +205,19 @@ apt-key add /etc/apt/apt.pub
 
 cp files/sbin/* $target/usr/local/sbin/
 
-# Write motd
+## Write motd
 cat <<EOF >$target/etc/motd
 
 Debian-CBS, ver. $VERSION
 For more information see http://github.com/vladimir-ipatov/cbs
 
 EOF
+
+## Set chrony reboot if there is no sources
+
+echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin' >> $target/etc/cron.d/chrony
+echo '*/10 * * * *	root	chronyc sourcestats|grep -q "^210 Number of sources = 0" && service chrony restart' >> $target/etc/cron.d/chrony
+
 
 ## Filling cbs configuration template
 
