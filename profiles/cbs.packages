@@ -33,3 +33,8 @@ chrony
 sudo
 openssh-server
 openssh-client
+screen
+tcpdump
+ifenslave-2.6
+ethtool
+iperf
