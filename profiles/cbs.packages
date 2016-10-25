@@ -38,3 +38,6 @@ tcpdump
 ifenslave-2.6
 ethtool
 iperf
+nmap
+wget
+htop
