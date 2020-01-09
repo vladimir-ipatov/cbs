@@ -1,8 +1,5 @@
-# Default preseed file for the Debian-CBS project
-# https://github.com/vladimir-ipatov/cbs
-
 # This variant implements the automatic partitioning
-# It should be used with cbs.files/postinst.conf partitioning features
+# It should be used with SCI-amd64.files/postinst.conf partitioning features
 
 # The automatic disk layout is following:
 # /dev/sd[ab]1 =   10G    = RAID1 = /dev/md0 = root
@@ -14,7 +11,7 @@
 # * place LVM/xenvg on the RAID10 on /dev/sd[ab*]3 or on the completely another set of disks
 
 
-simple-cdd	simple-cdd/profiles multiselect cbs
+simple-cdd	simple-cdd/profiles multiselect SCI-amd64
 tasksel		tasksel/first multiselect 
 
 #### ADD chose-partman-recipe ####
@@ -31,12 +28,6 @@ d-i		clock-setup/utc boolean true
 clock-setup	clock-setup/ntp	boolean	false
 
 d-i	console-keymaps-at/keymap select us
-#d-i keyboard-configuration/variant select English (US)
-#keyboard-configuration keyboard-configuration/variant select English (US)
-#d-i keyboard-configuration/xkb-keymap select us
-#keyboard-configuration keyboard-configuration/xkb-keymap select us
-#d-i keymap select us
-
 d-i	console-tools/archs	select	at
 
 # Country settings. 
@@ -53,17 +44,21 @@ tzsetup-udeb	tzsetup/country/RU	select	Europe/Moscow
 #d-i	console-setup/charmap47	select		UTF-8
 #d-i	console-setup/codesetcode string	CyrSlav
 
-passwd   passwd/make-user    boolean true
-d-i passwd/user-default-groups string audio cdrom video sudo
+passwd   passwd/make-user    boolean false
 
 d-i netcfg/choose_interface select auto
-#d-i netcfg/disable_dhcp boolean true
 d-i netcfg/wireless_wep string 
 
 
 ####partman
 #### INCLUDE PARTMAN ####
 
+d-i	partman-basicfilesystems/choose_label string gpt
+d-i	partman-basicfilesystems/default_label string gpt
+d-i	partman-partitioning/choose_label string gpt
+d-i	partman-partitioning/default_label string gpt
+d-i	partman/choose_label string gpt
+d-i	partman/default_label string gpt
 ####end of partitioning
 
 
@@ -82,6 +77,11 @@ d-i apt-setup/use_mirror boolean false
 d-i apt-setup/services-select multiselect
 d-i apt-setup/security_host string
 d-i apt-setup/volatile_host string
+
+d-i apt-setup/use_mirror boolean false
+d-i apt-setup/cdrom/set-first boolean false
+d-i apt-setup/cdrom/set-next boolean false
+d-i apt-setup/cdrom/set-failed boolean false
 
 
 exim4-config  exim4/dc_eximconfig_configtype  select no configuration at this time

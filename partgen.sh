@@ -73,13 +73,19 @@ EOF
 d-i partman-auto/method string regular
 d-i partman-auto/disk string /dev/sda
 d-i partman-auto/expert_recipe string root ::	\\
-	2048 10 2048 ext4			\\
+	32 10 32 free				\\
+		$gptonly{ }					\\
+		$primary{ }					\\
+		$bios_boot{ }					\\
+		method{ biosgrub }				\\
+	.							\\
+	10240 10 10240 ext4			\\
 		\$lvmignore{ }					\\
 		\$primary{ } \$bootable{ } method{ format }	\\
 		format{ } use_filesystem{ } filesystem{ ext4 }	\\
 		mountpoint{ / }					\\
 	.							\\
-	512 20 512 linux-swap					\\
+	1024 20 1024 linux-swap					\\
 		\$lvmignore{ }					\\
 		\$primary{ } method{ swap } format{ }		\\
 EOF
@@ -94,7 +100,7 @@ EOF
 		mountpoint{ /var }				\\
 EOF
   else
-    lvmvol=sda3
+    lvmvol=sda4
   fi
   cat <<EOF
 	.					\\
@@ -115,8 +121,8 @@ d-i partman/confirm boolean true
 EOF
   if [ -n "$partlvm" ]; then
     cat <<EOF
-# was unable to do in-target mount /stuff, so it woll done in postinst.sh
-d-i preseed/late_command string vgcreate cbs /dev/$lvmvol && lvcreate -L 2G -n home cbs && mkfs.ext4 /dev/cbs/home && echo "/dev/cbs/home /home ext4 defaults 0 2" >>/target/etc/fstab && mount /dev/cbs/home /target/mnt && mv /target/home/* /target/mnt && umount /target/mnt
+# was unable to do in-target mount /home, so it woll done in postinst.sh
+d-i preseed/late_command string vgcreate --yes cbs /dev/$lvmvol && lvcreate --yes -L 2G -n home cbs && mkfs.ext4 /dev/cbs/home && echo "/dev/cbs/home /home ext4 defaults 0 2" >>/target/etc/fstab && mount /dev/cbs/home /target/mnt && mv /target/home/* /target/mnt && umount /target/mnt
 EOF
   fi
   ;;
@@ -156,7 +162,13 @@ EOF
 
 # Next you need to specify the physical partitions that will be used. 
 d-i partman-auto/expert_recipe string multiraid ::	\\
-	2048 10 2048 raid			\\
+	32 10 32 free				\\
+		$gptonly{ }					\\
+		$primary{ }					\\
+		$bios_boot{ }					\\
+		method{ biosgrub }				\\
+	.					\\
+	10240 10 10240 raid			\\
 		\$primary{ } method{ raid }	\\
 	.					\\
 	1024 20 1024 raid			\\
@@ -178,7 +190,7 @@ EOF
   if [ -n "$partlvm" ]; then
     cat <<EOF
 	.					\\
-	2048 20 2048 ext4			\\
+	20480 20 20480 ext4			\\
 		\$defaultignore{ }		\\
 		\$lvmok{ }			\\
 		lv_name{ home }		\\
@@ -210,13 +222,13 @@ EOF
 
 EOF
   (echo -n d-i partman-auto-raid/recipe string" "
-   echo -n 1 $disks 0 ext4 / `echo $devices|awk -vn=1 'BEGIN{OFS="#";ORS=""}{for(i=1; i<=NF; i++){$i=$i n}; print}'`.
-   echo -n 1 $disks 0 swap - `echo $devices|awk -vn=2 'BEGIN{OFS="#";ORS=""}{for(i=1; i<=NF; i++){$i=$i n}; print}'`.
+   echo -n 1 $disks 0 ext4 / `echo $devices|awk -vn=2 'BEGIN{OFS="#";ORS=""}{for(i=1; i<=NF; i++){$i=$i n}; print}'`.
+   echo -n 1 $disks 0 swap - `echo $devices|awk -vn=3 'BEGIN{OFS="#";ORS=""}{for(i=1; i<=NF; i++){$i=$i n}; print}'`.
    if [ -n "$partvar" ]; then
-     echo -n 1 $disks 0 ext4 / `echo $devices|awk -vn=3 'BEGIN{OFS="#";ORS=""}{for(i=1; i<=NF; i++){$i=$i n}; print}'`.
-     lvmpartno=4
+     echo -n 1 $disks 0 ext4 / `echo $devices|awk -vn=4 'BEGIN{OFS="#";ORS=""}{for(i=1; i<=NF; i++){$i=$i n}; print}'`.
+     lvmpartno=5
    else
-     lvmpartno=3
+     lvmpartno=4
    fi
    if [ -n "$partlvm" ]; then
      echo $partlvm $disks 0 lvm / `echo $devices|awk -vn=$lvmpartno 'BEGIN{OFS="#";ORS=""}{for(i=1; i<=NF; i++){$i=$i n}; print}'`.

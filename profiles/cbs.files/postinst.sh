@@ -4,7 +4,7 @@
 
 set -x
 
-VERSION=1.0
+VERSION=3.0
 
 export PATH=/usr/bin:/bin:/usr/sbin:/sbin
 # XXX needed for handling around reloc_domain
@@ -17,40 +17,22 @@ if [ -f postinst.conf ]; then
  . postinst.conf
 fi
 
-if [ "$1" = "real" ]; then
- target=""
-else # prepare test environment
- if [ `id -u` -eq 0 ]; then
-   echo "Please don't run test mode as root, because it can modify your system accidentally!"
-   exit 1
- fi
- rm -rf target
- cp -a target-orig target
- target=target
- mkdir -p $target/etc/xen $target/usr/sbin $target/usr/share/ganeti $target/usr/lib/xen $target/usr/local/sbin
-fi
+## mount proc and sys, mknod for loop
+mount -t proc proc /proc
+mount -t sysfs sys /sys
+mknod /dev/loop0 b 7 0
 
-cp -a real/* .
-
-mkdir -p backup
-for i in \
- /etc/network/interfaces \
- /etc/hosts \
- /etc/hostname \
- /etc/default/puppet \
- /etc/rsyslog.conf \
- /etc/dhcp/dhclient.conf
-do
- cp $target/$i backup
-done
+## Set PermitRoolLogin=yes in ssd_config
+sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' $TARGET/etc/ssh/sshd_config
 
 ## Set /var/log/kern.log to unbuffered mode
 
 ./strreplace.sh $target/etc/rsyslog.conf "^kern\.\*[\t ]+-\/var\/log\/kern.log" 'kern.*\t\t\t\t/var/log/kern.log'
 
-## Assign supersede parameters for node's dhcp
-dns=`grep nameserver $target/etc/resolv.conf|awk '{print $2; exit}'\;`
-./strreplace.sh $target/etc/dhcp/dhclient.conf "^#supersede domain-name" "supersede domain-name $domain\;\nsupersede domain-name-servers $dns\;"
+## Enable puppet to start
+
+echo Setting up defaults
+./strreplace.sh $target/etc/default/puppet "^START=" "START=yes"
 
 ## Enable smartd to start
 
@@ -64,99 +46,24 @@ dns=`grep nameserver $target/etc/resolv.conf|awk '{print $2; exit}'\;`
 
 sed -i '/\/media\/usb0/d' $target/etc/fstab
 
-## Add flush option for USB-flash mounted with vfat
-
-./strreplace.sh $target/etc/usbmount/usbmount.conf "^FS_MOUNTOPTIONS" 'FS_MOUNTOPTIONS="-fstype=vfat,flush"'
-
 ## Set localized console and keyboard
 
 cp files/default/* $target/etc/default/
 
-## Copy sci-puppet modules
-
-cp -r files/root/puppet/modules $target/etc/puppet/
-cp -r files/root/puppet/manifests $target/etc/puppet/
-cp -r files/root/*pp $target/etc/puppet/
-
-## Add startup script rc.cbs to setup performance
-
-# a bit ugly, but fast ;)
-cat <<EOF >$target/etc/rc.local
-#!/bin/sh -e
-#
-# rc.local
-#
-# This script is executed at the end of each multiuser runlevel.
-# Make sure that the script will "exit 0" on success or any other
-# value on error.
-#
-# In order to enable or disable this script just change the execution
-# bits.
-
-if [ -f /etc/rc.cbs ]; then
-  . /etc/rc.cbs
+if [ ! -f /proc/mounts ]; then
+	echo Warning: /proc is not mounted. Trying to fix.
+	mkdir -p /proc
+	mount /proc
+	proc_mounted=1
 fi
 
-exit 0
-EOF
-chmod +x $target/etc/rc.local
-
-
-## Tune storage scheduler for better disk latency
-cat <<EOFF >$target/etc/rc.cbs
-#!/bin/sh
-# On-boot configuration for hardware for better cluster performance
-# mostly http://code.google.com/p/ganeti/wiki/PerformanceTuning
-
-modprobe sg
-disks=\`sg_map -i|awk '{if(\$3=="ATA"){print substr(\$2, length(\$2))}}'\`
-for i in \$disks; do
-  # Set value if you want to use read-ahead
-  ra="$read_ahead"
-  if [ -n "\$ra" ]; then
-    blockdev --setra \$ra /dev/sd\$i
-  fi
-  if grep -q sd\$i /etc/sysfs.conf; then
-    echo sd\$i already configured in /etc/sysfs.conf
-  else
- cat <<EOF >>/etc/sysfs.conf
-block/sd\$i/queue/scheduler = deadline
-block/sd\$i/queue/iosched/front_merges = 0
-block/sd\$i/queue/iosched/read_expire = 150
-block/sd\$i/queue/iosched/write_expire = 1500
-EOF
-  fi
-done
-/etc/init.d/sysfsutils restart
-EOFF
-chmod +x $target/etc/rc.cbs
-
-## Add tcp buffers tuning for drbd
-## Tune disk system to avoid (or reduce?) deadlocks
-cat <<EOF >$target/etc/sysctl.d/cbs.conf
-# Increase "minimum" (and default) 
-# tcp buffer to increase the chance to make progress in IO via tcp, 
-# even under memory pressure. 
-# These numbers need to be confirmed - probably a bad example.
-#net.ipv4.tcp_rmem = 131072 131072 10485760 
-#net.ipv4.tcp_wmem = 131072 131072 10485760 
-
-# add disk tuning options to avoid (or reduce?) deadlocks
-# gives better latency on heavy load
-vm.swappiness = 0
-vm.overcommit_memory = 1
-vm.dirty_background_ratio = 5
-vm.dirty_ratio = 10
-vm.dirty_expire_centisecs = 1000
-EOF
-
-# Mount /home if we detect unmounted cbs/home
+# Mount /home if we detect unmounted xenvg/system-stuff
 grep -q /home /proc/mounts || test -b $target/dev/cbs/home && test -d $target/home && grep -q /home $target/etc/fstab && mount $target/home
 
 # Place commented-out template for /cbs if no one
 grep -q /home $target/etc/fstab || echo "#/dev/cbs/home /home ext4 errors=remount-ro 0 0" >>$target/etc/fstab
 
-## Set up CD-ROM repository: create /media/cbs
+## Set up CD-ROM repository: create /stuff/cdimages, /media/sci
 
 echo Setting up local CD-ROM repository
 mkdir -p $target/media/cbs
@@ -182,102 +89,48 @@ if [ -n "$dev" -a -e "$dev" ]; then
 	mount /media/cbs && (apt-cdrom -d=/media/cbs add; umount /media/cbs)
 else
 	echo Unable to find CD-ROM device
-	echo "#/home/cbs.iso /media/cbs iso9660 loop 0 1" >>$target/etc/fstab
+        echo "#/home/cbs.iso /media/cbs iso9660 loop 0 1" >>$target/etc/fstab
 fi
 
 ## set cbs apt sources
-cp files/apt/sci-dev.list files/apt/apt.pub $target/etc/apt/sources.list.d
-cp files/apt/apt.pub $target/etc/apt
-echo "deb http://mirror.yandex.ru/debian/ wheezy main" >> $target/etc/apt/sources.list
-echo "deb http://mirror.yandex.ru/debian-security/ wheezy/updates main" >> $target/etc/apt/sources.list
-echo "deb http://ftp.debian.org/debian-backports/ wheezy-backports main" >> $target/etc/apt/sources.list
-chroot $target "apt-key add /etc/apt/apt.pub"
+cp files/apt/sci-dev.list $target/root
+cp files/apt/apt.pub $target/etc/apt/sci-dev.pub
+apt-key add $target/etc/apt/sci-dev.pub
 
-## Add cbs deploing scripts
+## Remove systemd
+apt-get install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages sysvinit-core sysvinit-utils
+cp "$TARGET/usr/share/sysvinit/inittab" "$TARGET/etc/inittab"
+apt-get remove -y --allow-downgrades --allow-remove-essential --allow-change-held-packages --purge --auto-remove systemd
+echo -e 'Package: systemd\nPin: release *\nPin-Priority: -1' > "$TARGET/etc/apt/preferences.d/systemd"
+echo -e '\n\nPackage: *systemd*\nPin: release *\nPin-Priority: -1' >> "$TARGET/etc/apt/preferences.d/systemd"
+echo -e '\nPackage: systemd:i386\nPin: release *\nPin-Priority: -1' >> "$TARGET/etc/apt/preferences.d/systemd"
 
-cp files/sbin/* $target/usr/local/sbin/
+## disable nut-client
+update-rc.d nut-client remove
 
-# Write motd
+## Write motd
 cat <<EOF >$target/etc/motd
 
-Debian-CBS, ver. $VERSION
-For more information see http://github.com/vladimir-ipatov/cbs
+Debian CBS, ver. $VERSION
+For more information see http://www.c-mit.ru
 
 EOF
 
-## Filling cbs configuration template
+## enable puppet
+update-rc.d -f puppet remove
+update-rc.d -f puppet defaults
 
-mkdir $target/etc/sci
-touch $target/etc/sci/sci.conf
+## Set vim disable defaults for 8.0
+sed -i 's/\" let g:skip_defaults_vim = 1/let g:skip_defaults_vim = 1/' $TARGET/etc/vim/vimrc
 
-mkdir $target/etc/cbs
-cat <<EOF >$target/etc/cbs/cbs.conf
-# This is the SCI-CD cluster setup parameters
-# Fill the values and execute "sci-setup cluster"
+## Set vim syntax on
+sed -i 's/\"syntax on/syntax on/' $TARGET/etc/vim/vimrc
 
-# The hostname to represent the cluster (without a domain part).
-# It MUST be different from any node's hostnames
-CLUSTER_NAME=gnt
 
-# The IP address corresponding to CLUSTER_NAME.
-# It MUST be different from any node's IP.
-# You should not up this IP address manualy - it will be automatically
-# activated as an interface alias on the current master node
-# We suggest to assign this address in the LAN (if LAN segment is present)
-CLUSTER_IP=
+## Set chrony reboot if there is no sources
 
-# The first (master) node data
-NODE1_NAME=$hostname
-NODE1_IP=$ipaddr
-
-# Optional separate IP for SAN (should be configured and up;
-# ganeti node will be configured with -s option)
-NODE1_SAN_IP=
-# Optional separate IP for LAN (should be configured and up)
-NODE1_LAN_IP=
-
-# Optional additional IP for virtual service machine "sci" in the LAN segment.
-# If NODE1_LAN_IP is set, then you probably wish to set this too.
-# (you should not to pre-configure this IP on the node)
-SCI_LAN_IP=
-# Optional parameters if NODE1_LAN_IP not configured
-# If not set, it will be omited in instance's interface config
-SCI_LAN_NETMASK=
-SCI_LAN_GATEWAY=
-
-# The second node data
-# If you skip it, then the cluster will be set up in non redundant mode
-NODE2_NAME=
-NODE2_IP=
-NODE2_SAN_IP=
-NODE2_LAN_IP=
-
-# Network interface for CLUSTER_IP
-# (if set, this interface will be passed to "gnt-cluser init --master-netdev")
-# Autodetect if NODE1_LAN_IP is set and CLUSTER_IP matches LAN network
-MASTER_NETDEV=
-MASTER_NETMASK=
-
-# Network interface to bind to virtual machies by default
-# (if set, this interface will be passed to
-# "gnt-cluster init --nic-parameters link=")
-# Autodetect if NODE1_LAN_IP or MASTER_NETDEV are set
-LAN_NETDEV=
-
-# reserved volume names are ignored by Ganety and may be used for any needs
-# (comma separated)
-RESERVED_VOLS="xenvg/system-.*"
-
-# sources for approx apt cache server on sci
-# all two together must be non empty, or nonexistent
-APT_DEBIAN="debian http://ftp.debian.org/debian/"
-APT_SECURITY="security http://security.debian.org/"
-
-# forwarders for DNS server on sci
-# use syntax "1.2.3.4; 1.2.3.4;"
-DNS_FORWARDERS=""
-
-EOF
+echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/sbin:/usr/local/bin' >> $target/etc/cron.d/chrony
+echo '*/10 * * * *	root	chronyc sourcestats|grep -q "^210 Number of sources = 0" && service chrony restart' >> $target/etc/cron.d/chrony
 
 # Write installed version information
-echo $VERSION >$target/etc/cbs/cbs.version
+echo $VERSION >$target/etc/cbs.version

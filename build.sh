@@ -76,10 +76,10 @@ if [ -z "$disks" ]; then
   ./partgen.sh -d 4 -l 10 >src/chose-partman-recipe/d4l10.preseed
   ./partgen.sh -d 6 -l 10 >src/chose-partman-recipe/d6l10.preseed
   ./partgen.sh -d 8 -l 10 >src/chose-partman-recipe/d8l10.preseed
-  (cd src/chose-partman-recipe; dpkg-buildpackage)
+  (cd src/chose-partman-recipe; fakeroot dpkg-buildpackage)
   mkdir -p local
   cp src/chose-partman-recipe*.udeb local
-  test -d tmp/mirror && (cd tmp/mirror; reprepro remove squeeze chose-partman-recipe)
+  test -d tmp/mirror && (cd tmp/mirror; reprepro remove buster chose-partman-recipe)
 else
 
   echo Auto apply single user-predefined layout
@@ -90,18 +90,30 @@ else
   awk '//{if(s)print}/#### INCLUDE PARTMAN ####/{print "#### PARTMAN INCLUDED ####"; s=1}' profiles/default.preseed.$profile.in >>profiles/default.preseed
 fi
 
-# Prepare puppet modules as git repository with github upstream
+# Clone or pull the requested package from skycover on github
+# branch definition is global
+fetch(){
+  pkg=$1
+  pkg_dir=$2
+  if [ -d $pkg_dir/.git ]; then
+    echo Pull $pkg
+    # We will prefetch the desired branch in the case it was not exists upon previous clone
+    (cd $pkg_dir; git fetch origin $branch; git checkout $branch; git pull)
+  else
+    echo Clone $pkg
+    git clone https://github.com/skycover/$pkg.git $pkg_dir
+    (cd $pkg_dir; git checkout $branch)
+  fi
+}
 
-puppet_dir=profiles/$profile.files/files/root/puppet
-if [ -d $puppet_dir/.git ]; then
-  echo Pull sci-puppet
-  # We will prefetch the desired branch in the case it was not exists upon previous clone
-  (cd $puppet_dir; git fetch origin $branch; git checkout $branch; git pull)
-else
-  echo Clone sci-puppet
-  git clone https://github.com/skycover/sci-puppet.git $puppet_dir
-  (cd $puppet_dir; git checkout $branch)
-fi
+exitmsg(){
+  echo $*
+  exit 1
+}
+
+echo Preparing puppet modules as git repository with github upstream
+
+fetch sci-puppet profiles/$profile.files/files/root/puppet
 
 # Write the current commit number to a file git-commit.txt
 git log|head -1 >profiles/$profile.files/git-commit.txt
