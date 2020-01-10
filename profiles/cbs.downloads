@@ -7,7 +7,7 @@ firmware-realtek
 # mandatory stuff
 puppetmaster
 
-iproute
+iproute2
 
 bind9
 dnsutils
